@@ -1,0 +1,7 @@
+fastapi>=0.115.0
+uvicorn>=0.32.0
+python-multipart>=0.0.12
+torch>=2.5.1
+numpy>=1.26.4
+pydantic>=2.9.0
+aiofiles>=24.1.0

@@ -1,0 +1,27 @@
+{
+  "version": "v4_more_realistic",
+  "input_dim": 318,
+  "num_classes": 105,
+  "batch": 32,
+  "lr": 0.0002,
+  "weight_decay": 0.03,
+  "label_smoothing": 0.1,
+  "val_ratio": 0.15,
+  "seed": 42,
+  "model": {
+    "d_model": 160,
+    "layers": 3,
+    "dropout": 0.25
+  },
+  "aug": {
+    "p_frame_drop": 0.2,
+    "p_time_mask": 0.25,
+    "jitter_std": 0.015,
+    "p_feat_dropout": 0.2
+  },
+  "features": [
+    "anchor_scale_norm",
+    "velocity_concat",
+    "attention_pooling"
+  ]
+}

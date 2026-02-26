@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #13131f;
+  --bg-card: #1a1a2e;
+  --bg-card-hover: #1e1e36;
+  --neon-cyan: #00ffcc;
+  --neon-green: #39ff14;
+  --neon-pink: #ff007f;
+  --neon-blue: #00bfff;
+  --text-primary: #e8e8f0;
+  --text-muted: #7878a0;
+  --border-dim: #2a2a45;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  overflow-x: hidden;
+}
+
+/* ── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-green);
+}
+
+/* ── Neon glow utilities ────────────────────────────────────────────────── */
+@layer utilities {
+  .glow-cyan {
+    box-shadow: 0 0 8px var(--neon-cyan), 0 0 20px rgba(0, 255, 204, 0.25);
+  }
+  .glow-green {
+    box-shadow: 0 0 8px var(--neon-green), 0 0 20px rgba(57, 255, 20, 0.25);
+  }
+  .glow-pink {
+    box-shadow: 0 0 8px var(--neon-pink), 0 0 20px rgba(255, 0, 127, 0.25);
+  }
+  .text-glow-cyan {
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px rgba(0, 255, 204, 0.5);
+  }
+  .text-glow-green {
+    text-shadow: 0 0 10px var(--neon-green), 0 0 20px rgba(57, 255, 20, 0.5);
+  }
+  .border-neon {
+    border-color: var(--neon-cyan);
+    border-width: 1px;
+  }
+  .bg-card {
+    background-color: var(--bg-card);
+  }
+  .bg-card-hover:hover {
+    background-color: var(--bg-card-hover);
+  }
+}
+
+/* ── Animated neon progress bar ─────────────────────────────────────────── */
+@keyframes neon-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+.neon-bar {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* ── Skeleton/canvas overlay sizing ─────────────────────────────────────── */
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.camera-container video,
+.camera-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-container canvas {
+  pointer-events: none;
+}
