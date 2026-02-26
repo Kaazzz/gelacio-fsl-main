@@ -24,44 +24,62 @@ interface Props {
 
 // ── Landmark extraction helpers ──────────────────────────────────────────────
 
-/** Extract (x, y) from a NormalizedLandmarkList into a flat float array. */
-function extractLandmarks(
+/**
+ * Training feature layout — 159 dims/frame (before velocity concat):
+ *   right_hand : 21 × xyz = 63
+ *   left_hand  : 21 × xyz = 63
+ *   pose (11)  : 11 × xyz = 33
+ *   Total = 159  →  ×2 after velocity concat in backend = 318
+ *
+ * Pose indices match POSE_IDXS_11 from the training notebook:
+ *   0=nose, 11-16=shoulders/elbows/wrists, 23-26=hips/knees
+ */
+const POSE_IDXS = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26]  // 11 landmarks
+
+/** Extract [x, y, z] for every landmark in the list (zeros if absent). */
+function extractXYZ(
   list: { x: number; y: number; z?: number }[] | undefined | null,
   count: number,
-  coords: 2 | 3 = 2,
 ): number[] {
   const out: number[] = []
   for (let i = 0; i < count; i++) {
     const lm = list?.[i]
-    out.push(lm?.x ?? 0, lm?.y ?? 0)
-    if (coords === 3) out.push(lm?.z ?? 0)
+    out.push(lm?.x ?? 0, lm?.y ?? 0, lm?.z ?? 0)
+  }
+  return out
+}
+
+/** Extract [x, y, z] for a specific subset of pose landmark indices. */
+function extractPoseSelected(
+  list: { x: number; y: number; z?: number }[] | undefined | null,
+  indices: number[],
+): number[] {
+  const out: number[] = []
+  for (const idx of indices) {
+    const lm = list?.[idx]
+    out.push(lm?.x ?? 0, lm?.y ?? 0, lm?.z ?? 0)
   }
   return out
 }
 
 /**
- * Build the flat feature vector from a MediaPipe Holistic result.
- * Layout matches the Python feature extractor used during training:
- *   pose (33 landmarks × 2) + left_hand (21 × 2) + right_hand (21 × 2)
- *   = 150 floats per frame  (x, y only — matches most FSL training setups)
+ * Build the 159-dim feature vector matching the Python training extraction:
+ *   right_hand(63) + left_hand(63) + pose_selected(33)
+ * Returns null when no landmarks detected (frame marked invalid in buffer).
  */
 function buildFeatureVector(results: any): number[] | null {
   if (!results) return null
 
-  const pose       = extractLandmarks(results.poseLandmarks,       33, 2)
-  const leftHand   = extractLandmarks(results.leftHandLandmarks,   21, 2)
-  const rightHand  = extractLandmarks(results.rightHandLandmarks,  21, 2)
+  const rightHand = extractXYZ(results.rightHandLandmarks, 21)          // 63
+  const leftHand  = extractXYZ(results.leftHandLandmarks,  21)          // 63
+  const pose      = extractPoseSelected(results.poseLandmarks, POSE_IDXS) // 33
 
-  // If all zeros (no person detected) we still push so the mask can mark invalid
-  const frame = [...pose, ...leftHand, ...rightHand]
-
-  // Validity: at least pose OR one hand must be non-zero
   const valid =
     results.poseLandmarks != null ||
     results.leftHandLandmarks != null ||
     results.rightHandLandmarks != null
 
-  return valid ? frame : null   // null = no person → buffer marks as invalid
+  return valid ? [...rightHand, ...leftHand, ...pose] : null
 }
 
 // ── Drawing helpers ──────────────────────────────────────────────────────────

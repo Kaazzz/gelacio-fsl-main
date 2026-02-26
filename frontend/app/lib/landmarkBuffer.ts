@@ -46,7 +46,7 @@ export class LandmarkBuffer {
    * Padding is prepended (at the start) using zero vectors with mask=0.
    */
   getSequence(): { sequence: number[][]; mask: number[] } {
-    const dim = this.featureDim || 150   // fallback dim if buffer empty
+    const dim = this.featureDim || 159   // fallback dim: 159 = rh(63)+lh(63)+pose(33)
 
     // Reconstruct in chronological order
     const ordered: (number[] | null)[] = []

@@ -93,8 +93,10 @@ def load_model() -> None:
     else:
         logger.info("No config.json found — using defaults (nhead=8, dropout=0.1)")
 
-    nhead   = int(cfg.get("nhead",   config.NHEAD))
-    dropout = float(cfg.get("dropout", config.DROPOUT))
+    # config.json stores model params under a nested "model" key
+    model_cfg = cfg.get("model", {})
+    nhead   = int(cfg.get("nhead",   model_cfg.get("nhead",   config.NHEAD)))
+    dropout = float(cfg.get("dropout", model_cfg.get("dropout", config.DROPOUT)))
 
     features = cfg.get("features", [])
     use_norm = "anchor_scale_norm" in features
