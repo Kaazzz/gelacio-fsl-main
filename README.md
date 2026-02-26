@@ -1,6 +1,6 @@
 # GelacioFSL – Real-time Sign Language Recognition
 
-**Real-time Filipino Sign Language (FSL) recognition powered by a Transformer-based deep learning model**
+**Real-time Cebuano Filipino Sign Language (C-FSL) recognition powered by a Transformer-based deep learning model**
 
 GelacioFSL is a local-deployment application that uses your webcam and MediaPipe Holistic to extract body/hand landmarks in the browser, then runs them through a trained **LandmarkTransformerV4** model on the backend to recognise FSL signs in real time.
 
